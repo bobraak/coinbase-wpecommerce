@@ -82,11 +82,8 @@ function form_coinbase_wpe() {
 
 	require_once(dirname(__FILE__) . "/coinbase-php/Coinbase.php");
 
-	$pageURL = 'http';
-	if ($_SERVER["HTTPS"] == "on") {
-		$pageURL .= "s";
-	}
-	$pageURL .= "://";
+	$pageURL = is_ssl() ? 'https://' : 'http://';
+
 	if ($_SERVER["SERVER_PORT"] != "80") {
 			$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
 	} else {
@@ -174,7 +171,7 @@ function submit_coinbase_wpe() {
 }
 
 function coinbase_wpe_callback() {
-	if ($_GET['coinbase_callback'] == "oauth") {
+	if ( isset( $_GET['coinbase_callback']) && $_GET['coinbase_callback'] == "oauth") {
 		// OAuth callback!
 		require_once(dirname(__FILE__) . "/coinbase-php/Coinbase.php");
 		$clientId = get_option("coinbase_wpe_clientid");
@@ -187,7 +184,7 @@ function coinbase_wpe_callback() {
 		update_option("coinbase_wpe_tokens", serialize($tokens));
 	} else if (isset($_GET['coinbase_order'])) {
 		unset($_GET['order']);
-	} else if($_GET['coinbase_callback'] == get_option("coinbase_wpe_callbacksecret")) {
+	} else if( isset( $_GET['coinbase_callback']) && $_GET['coinbase_callback'] == get_option("coinbase_wpe_callbacksecret")) {
 		
 		
 		require_once(dirname(__FILE__) . "/coinbase-php/Coinbase.php");
